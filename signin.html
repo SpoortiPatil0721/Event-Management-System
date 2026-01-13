@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CampusBuzz — Sign In</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Force section and form to be visible */
+    .section {
+      opacity: 1 !important;
+      transform: none !important;
+      display: flex !important;
+      justify-content: center;
+      align-items: center;
+      min-height: 80vh;
+    }
+
+    .auth-form {
+      background: #111;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 15px rgba(0,255,255,0.2);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .headline {
+      color: var(--neon, #00ffff);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Popup styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .popup {
+      background: #1a1a1a;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 10px var(--neon, #00ffff);
+      text-align: center;
+      color: white;
+      width: 90%;
+      max-width: 400px;
+    }
+    .popup input {
+      width: 100%;
+      margin-top: 1rem;
+      padding: 0.7rem;
+      background: #222;
+      border: 1px solid #444;
+      border-radius: 0.5rem;
+      color: white;
+    }
+    .popup button {
+      margin-top: 1rem;
+      padding: 0.7rem 1.2rem;
+      background: var(--neon, #00ffff);
+      color: #000;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<script src="script.js"></script>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <header class="header">
+    <div class="brand">
+      <div class="logo">CB</div>
+      <div>
+        <div class="title">CampusBuzz</div>
+        <div class="sub">Events · Clubs · Campus Life</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+    </nav>
+
+    <div class="hamburger" aria-hidden="true">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </div>
+  </header>
+
+  <main>
+    <section class="section reveal">
+      <form id="signin-form" class="auth-form">
+        <h1 class="headline">Sign In</h1>
+
+        <div class="field">
+          <input type="email" name="email" id="email" required>
+          <label for="email">Email</label>
+        </div>
+
+        <div class="field">
+          <input type="password" name="password" id="password" required>
+          <label for="password">Password</label>
+        </div>
+
+        <div style="text-align:right;margin-bottom:1rem;">
+          <a href="forgot_password.html" style="color:var(--neon);font-size:0.9rem;">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn neon">Sign In</button>
+
+        <p style="text-align:center;margin-top:1rem;color:#cbd6e0">
+          Don’t have an account? <a href="signup.html" style="color:var(--neon)">Create one</a>
+        </p>
+      </form>
+    </section>
+  </main>
+
+  <!-- Hidden popup for admin key -->
+  <div class="popup-overlay" id="admin-popup">
+    <div class="popup">
+      <h2>Admin Verification</h2>
+      <p>Enter your Admin Key to continue</p>
+      <input type="password" id="admin-key" placeholder="Admin Key" />
+      <button id="verify-admin">Verify</button>
+    </div>
+  </div>
+
+  <footer class="footer">© 2025 CampusBuzz — Built for students</footer>
+
+  <script>
+    const form = document.getElementById('signin-form');
+    const popup = document.getElementById('admin-popup');
+    const verifyBtn = document.getElementById('verify-admin');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      // Simple admin check
+      if (email.toLowerCase().includes('admin')) {
+        popup.style.display = 'flex';
+      } else {
+        this.action = 'signin.php';
+        this.method = 'POST';
+        this.submit();
+      }
+    });
+
+    verifyBtn.addEventListener('click', function() {
+      const adminKey = document.getElementById('admin-key').value.trim();
+      if (adminKey === '') {
+        alert('Please enter your admin key.');
+        return;
+      }
+
+      // Add admin key to form before submitting
+      const hiddenKey = document.createElement('input');
+      hiddenKey.type = 'hidden';
+      hiddenKey.name = 'admin_key';
+      hiddenKey.value = adminKey;
+      form.appendChild(hiddenKey);
+
+      popup.style.display = 'none';
+      form.action = 'signin.php';
+      form.method = 'POST';
+      form.submit();
+    });
+  </script>
+</body>
+</html>
